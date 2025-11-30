@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberForce Recruitment // Elite Security Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #00ff00;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .glitch {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+            25% { text-shadow: -2px 2px #ff00ff, 2px -2px #00ffff; }
+            50% { text-shadow: 2px -2px #ff00ff, -2px 2px #00ffff; }
+            75% { text-shadow: -2px -2px #ff00ff, 2px 2px #00ffff; }
+        }
+
+        .terminal {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .terminal-window {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .terminal-header {
+            background: #003300;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-close { background: #ff5555; }
+        .btn-minimize { background: #ffff55; }
+        .btn-maximize { background: #55ff55; }
+
+        .terminal-body {
+            padding: 1.5rem;
+        }
+
+        .typing {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            white-space: nowrap;
+            animation: typing 3s steps(40) 1s forwards, blink 0.75s step-end infinite;
+            width: 0;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .skill-card {
+            background: rgba(0, 50, 0, 0.5);
+            border: 1px solid #00ff00;
+            padding: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .skill-card:hover {
+            background: rgba(0, 100, 0, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .progress-bar {
+            background: #001a00;
+            height: 20px;
+            border: 1px solid #00ff00;
+            margin-top: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            height: 100%;
+            transition: width 2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .apply-btn {
+            background: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 1rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            margin: 2rem auto;
+            display: block;
+        }
+
+        .apply-btn:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .ascii-art {
+            font-size: 0.6rem;
+            line-height: 0.8rem;
+            color: #00ff00;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        #access-denied {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.9);
+            color: #fff;
+            padding: 2rem;
+            border: 3px solid #ff0000;
+            z-index: 1000;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-48%, -50%); }
+            75% { transform: translate(-52%, -50%); }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+
+    <header>
+        <h1 class="glitch">CyberForce Recruitment</h1>
+        <p>> Elite Security Operations // Authorized Personnel Only</p>
+    </header>
+
+    <div class="terminal">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-btn btn-close"></span>
+                <span class="terminal-btn btn-minimize"></span>
+                <span class="terminal-btn btn-maximize"></span>
+                <span>root@cyberforce:~$</span>
+            </div>
+            <div class="terminal-body">
+                <p class="typing">> Initializing secure connection...</p>
+                <p style="margin-top: 1rem;">> Connection established. Welcome to CyberForce.</p>
+                <p>> We are training aspiring cybersecurity professionals.</p>
+            </div>
+        </div>
+
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-btn btn-close"></span>
+                <span class="terminal-btn btn-minimize"></span>
+                <span class="terminal-btn btn-maximize"></span>
+                <span>required_skills.sh</span>
+            </div>
+            <div class="terminal-body">
+                <h2 class="section-title">[TRAINEES WILL GAIN SKILLS IN-]</h2>
+                <div class="skill-grid">
+                    <div class="skill-card">
+                        <h3>Penetration Testing</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="95">0%</div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Network Security</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="90">0%</div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Cryptography</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="85">0%</div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Reverse Engineering</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="88">0%</div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Threat Analysis</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="92">0%</div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Exploit Development</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="87">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-btn btn-close"></span>
+                <span class="terminal-btn btn-minimize"></span>
+                <span class="terminal-btn btn-maximize"></span>
+                <span>mission_brief.txt</span>
+            </div>
+            <div class="terminal-body">
+                <h2 class="section-title">[MISSION OBJECTIVES]</h2>
+                <ul style="list-style: none; line-height: 2;">
+                    <li>> Defend critical infrastructure</li>
+                    <li>> Identify and neutralize threats</li>
+                    <li>> Conduct ethical penetration testing</li>
+                    <li>> Develop security protocols</li>
+                    <li>> Train next-generation security experts</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="ascii-art">
+            <pre>
+    _______________
+   /              /|
+  /   SECURE     / |
+ /______________/  |
+ |  __________ |  /
+ | |          || /
+ | |  ACCESS  ||/
+ | |__________||
+ |______________|
+            </pre>
+        </div>
+
+        <button class="apply-btn" onclick="initiateApplication()">
+            [INITIATE APPLICATION]
+        </button>
+    </div>
+
+    <div id="access-denied">
+        <h2>⚠ ACCESS VERIFICATION REQUIRED ⚠</h2>
+        <p>Application submitted. Awaiting security clearance...</p>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Animate progress bars
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    const progress = bar.getAttribute('data-progress');
+                    bar.style.width = progress + '%';
+                    bar.textContent = progress + '%';
+                });
+            }, 1000);
+        });
+
+        // Application button
+        function initiateApplication() {
+            const accessDenied = document.getElementById('access-denied');
+            accessDenied.style.display = 'block';
+            
+            setTimeout(() => {
+                accessDenied.style.display = 'none';
+                alert('> Application logged. Our team will contact you via encrypted channels.\n> Stay vigilant. Stay secure.\n> CyberForce out.');
+            }, 2000);
+        }
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
